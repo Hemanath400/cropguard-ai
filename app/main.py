@@ -38,7 +38,14 @@ if not MODEL_PATH.exists():
     urllib.request.urlretrieve(MODEL_URL, MODEL_PATH)
     print("Model downloaded successfully.")
 
-model = tf.keras.models.load_model(MODEL_PATH)
+print("STEP 1: Starting TensorFlow/model initialization")
+
+try:
+    model = tf.keras.models.load_model(MODEL_PATH)
+    print("STEP 2: Model loaded successfully")
+except Exception as e:
+    print("MODEL LOAD ERROR:", repr(e))
+    raise
 
 TEMPLATES_DIR = BASE_DIR / "templates"
 STATIC_DIR = BASE_DIR / "static"
