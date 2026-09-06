@@ -6,31 +6,38 @@ from prepare_dataset import test_ds, class_names
 
 MODEL_PATH = "models/resnet50_tomato_finetuned_best.keras"
 
-# Load best saved model
+print("\nLoading model...")
 model = tf.keras.models.load_model(MODEL_PATH)
+print("Model loaded!")
 
-print("\nEvaluating best model on test set...\n")
+print("\nRunning full test evaluation...")
 
-# Test loss and accuracy
-test_loss, test_accuracy = model.evaluate(test_ds, verbose=1)
-
-print(f"\nTest Loss: {test_loss:.4f}")
-print(f"Test Accuracy: {test_accuracy:.4%}")
-
-
-# Collect true labels and predictions
-y_true = []
-y_pred = []
+# Get all test images and labels
+all_images = []
+all_labels = []
 
 for images, labels in test_ds:
-    predictions = model.predict(images, verbose=0)
+    all_images.append(images)
+    all_labels.append(labels)
 
-    y_true.extend(labels.numpy())
-    y_pred.extend(np.argmax(predictions, axis=1))
+X_test = tf.concat(all_images, axis=0)
+y_true = tf.concat(all_labels, axis=0).numpy()
 
+print("Test images:", X_test.shape)
+print("Test labels:", y_true.shape)
 
-# Classification report
-print("\nClassification Report:\n")
+# Predict everything
+predictions = model.predict(
+    X_test,
+    batch_size=32,
+    verbose=1
+)
+
+y_pred = np.argmax(predictions, axis=1)
+
+print("\n==============================")
+print("CLASSIFICATION REPORT")
+print("==============================")
 
 print(
     classification_report(
@@ -41,9 +48,15 @@ print(
     )
 )
 
+print("\n==============================")
+print("CONFUSION MATRIX")
+print("==============================")
 
-# Confusion matrix
 cm = confusion_matrix(y_true, y_pred)
 
-print("\nConfusion Matrix:\n")
 print(cm)
+
+print("\nClass order:")
+
+for i, name in enumerate(class_names):
+    print(i, "->", name)

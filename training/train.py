@@ -9,41 +9,31 @@ from prepare_dataset import (
     train_labels_int
 )
 
-from model import model
-
-
-# ============================================================
-# 1. LOAD THE BEST MODEL FROM EPOCH 1
-# ============================================================
-
 BEST_MODEL = "models/resnet50_tomato_best.keras"
 
 print("\nLoading best Epoch-1 model...")
-
 model = tf.keras.models.load_model(BEST_MODEL)
 
-print("Best model loaded successfully.")
-
-
-# ============================================================
-# 2. UNFREEZE ONLY THE LAST 30 RESNET50 LAYERS
-# ============================================================
+# ------------------------------------------------------------
+# Fine-tune ResNet50
+# ------------------------------------------------------------
 
 base_model = model.get_layer("resnet50")
 
 base_model.trainable = True
 
+# Freeze all but last 30 layers
 for layer in base_model.layers[:-30]:
     layer.trainable = False
 
-print("\nFine-tuning configuration:")
-print("Frozen ResNet50 layers:", len(base_model.layers) - 30)
-print("Trainable ResNet50 layers: 30")
+# Keep BatchNormalization layers frozen
+for layer in base_model.layers:
+    if isinstance(layer, tf.keras.layers.BatchNormalization):
+        layer.trainable = False
 
-
-# ============================================================
-# 3. CREATE CLASS WEIGHTS
-# ============================================================
+# ------------------------------------------------------------
+# Class weights
+# ------------------------------------------------------------
 
 classes = np.arange(len(class_names))
 
@@ -56,29 +46,24 @@ weights = compute_class_weight(
 class_weights = dict(zip(classes, weights))
 
 print("\nClass weights:")
+for i, weight in class_weights.items():
+    print(f"{i}: {class_names[i]} -> {weight:.4f}")
 
-for class_index, weight in class_weights.items():
-    print(f"{class_index}: {class_names[class_index]} -> {weight:.4f}")
-
-
-# ============================================================
-# 4. COMPILE WITH A VERY LOW LEARNING RATE
-# ============================================================
+# ------------------------------------------------------------
+# Compile
+# ------------------------------------------------------------
 
 model.compile(
-    optimizer=tf.keras.optimizers.Adam(
-        learning_rate=1e-5
-    ),
+    optimizer=tf.keras.optimizers.Adam(learning_rate=1e-5),
     loss=tf.keras.losses.SparseCategoricalCrossentropy(),
     metrics=[
         tf.keras.metrics.SparseCategoricalAccuracy(name="accuracy")
     ]
 )
 
-
-# ============================================================
-# 5. CALLBACKS
-# ============================================================
+# ------------------------------------------------------------
+# Callbacks
+# ------------------------------------------------------------
 
 checkpoint = tf.keras.callbacks.ModelCheckpoint(
     "models/resnet50_tomato_finetuned_best.keras",
@@ -89,33 +74,40 @@ checkpoint = tf.keras.callbacks.ModelCheckpoint(
 
 early_stopping = tf.keras.callbacks.EarlyStopping(
     monitor="val_loss",
-    patience=1,
+    patience=3,
     restore_best_weights=True,
     verbose=1
 )
 
+reduce_lr = tf.keras.callbacks.ReduceLROnPlateau(
+    monitor="val_loss",
+    factor=0.2,
+    patience=1,
+    min_lr=1e-7,
+    verbose=1
+)
 
-# ============================================================
-# 6. FINE-TUNE
-# ============================================================
+# ------------------------------------------------------------
+# Fine-tuning
+# ------------------------------------------------------------
 
-print("\nStarting fine-tuning...\n")
+print("\nStarting fine-tuning...")
 
 history = model.fit(
     train_ds,
     validation_data=val_ds,
-    epochs=2,
+    epochs=10,
     class_weight=class_weights,
     callbacks=[
         checkpoint,
-        early_stopping
+        early_stopping,
+        reduce_lr
     ]
 )
 
-
-# ============================================================
-# 7. SAVE FINE-TUNED MODEL
-# ============================================================
+# ------------------------------------------------------------
+# Save final model
+# ------------------------------------------------------------
 
 model.save(
     "models/resnet50_tomato_finetuned_final.keras"
@@ -127,8 +119,6 @@ np.save(
     allow_pickle=True
 )
 
-print("\nFine-tuning completed!")
-print(
-    "Best fine-tuned model: "
-    "models/resnet50_tomato_finetuned_best.keras"
-)
+print("\nFine-tuning complete!")
+print("Best model:")
+print("models/resnet50_tomato_finetuned_best.keras")
