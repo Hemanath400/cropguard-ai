@@ -29,7 +29,7 @@ MODEL_URL = (
     "resolve/main/resnet50_tomato_finetuned_best.keras"
 )
 
-MODEL_PATH = BASE_DIR / "models" / "resnet50_tomato_finetuned_best.keras"
+MODEL_PATH = Path("/tmp/resnet50_tomato_finetuned_best.keras")
 
 if not MODEL_PATH.exists():
     MODEL_PATH.parent.mkdir(parents=True, exist_ok=True)
