@@ -1,0 +1,1007 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>CropGuard AI</title>
+
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+
+    <!-- ==============================
+         HEADER
+    =============================== -->
+
+    <header class="hero">
+
+        <div class="hero-content">
+
+            <div class="brand-icon">
+                🌱
+            </div>
+
+            <div>
+                <h1>CropGuard AI</h1>
+
+                <p class="tagline">
+                    AI-Powered Tomato Disease Detection & Management
+                </p>
+            </div>
+
+        </div>
+
+        <div class="hero-badge">
+            🧠 Computer Vision + Generative AI
+        </div>
+
+    </header>
+
+
+    <main class="container">
+
+
+        <!-- ==============================
+             INTRODUCTION
+        =============================== -->
+
+        <section class="intro-section">
+
+            <h2>Protect Your Tomato Crops</h2>
+
+            <p>
+                Upload a clear image of a tomato leaf and let CropGuard AI
+                analyze it for potential diseases and provide practical
+                management guidance.
+            </p>
+
+        </section>
+
+
+        <!-- ==============================
+             UPLOAD CARD
+        =============================== -->
+
+        <section class="upload-card">
+
+            <div class="section-label">
+                <span>01</span>
+                Upload Leaf Image
+            </div>
+
+            <form id="uploadForm">
+
+                <label for="imageInput" class="upload-area" id="uploadArea">
+
+                    <div class="upload-icon">
+                        📷
+                    </div>
+
+                    <h3>Upload a tomato leaf image</h3>
+
+                    <p>
+                        Click here to choose an image
+                    </p>
+
+                    <span class="upload-hint">
+                        JPG, JPEG or PNG
+                    </span>
+
+                    <input
+                        type="file"
+                        id="imageInput"
+                        accept="image/*"
+                        required
+                    >
+
+                </label>
+
+
+                <!-- IMAGE PREVIEW -->
+
+                <div id="preview"></div>
+
+
+                <button
+                    type="submit"
+                    class="analyze-button"
+                    id="analyzeButton"
+                >
+                    <span>🔍</span>
+                    Analyze Leaf
+                </button>
+
+            </form>
+
+        </section>
+
+
+        <!-- ==============================
+             RESULT
+        =============================== -->
+
+        <div id="result"></div>
+
+
+        <!-- ==============================
+             HOW IT WORKS
+        =============================== -->
+
+        <section class="how-section">
+
+            <div class="section-label">
+                <span>02</span>
+                How CropGuard AI Works
+            </div>
+
+            <div class="steps">
+
+                <div class="step-card">
+
+                    <div class="step-icon">
+                        📷
+                    </div>
+
+                    <h3>Upload</h3>
+
+                    <p>
+                        Provide an image of the affected tomato leaf.
+                    </p>
+
+                </div>
+
+
+                <div class="step-card">
+
+                    <div class="step-icon">
+                        🧠
+                    </div>
+
+                    <h3>Analyze</h3>
+
+                    <p>
+                        Our deep learning model analyzes visual patterns
+                        in the leaf.
+                    </p>
+
+                </div>
+
+
+                <div class="step-card">
+
+                    <div class="step-icon">
+                        🌿
+                    </div>
+
+                    <h3>Identify</h3>
+
+                    <p>
+                        The system predicts the most likely disease
+                        and confidence level.
+                    </p>
+
+                </div>
+
+
+                <div class="step-card">
+
+                    <div class="step-icon">
+                        🤖
+                    </div>
+
+                    <h3>Guide</h3>
+
+                    <p>
+                        Generative AI converts agricultural information
+                        into simple guidance.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+    </main>
+
+
+    <!-- ==============================
+         FOOTER
+    =============================== -->
+
+    <footer>
+
+        <p>
+            🌱 <strong>CropGuard AI</strong>
+            &nbsp;•&nbsp;
+            AI-assisted agricultural decision support
+        </p>
+
+        <p class="footer-note">
+            For educational and decision-support purposes only.
+        </p>
+
+    </footer>
+
+
+<script>
+
+/* =========================================================
+   ELEMENTS
+========================================================= */
+
+const uploadForm =
+    document.getElementById("uploadForm");
+
+const imageInput =
+    document.getElementById("imageInput");
+
+const preview =
+    document.getElementById("preview");
+
+const result =
+    document.getElementById("result");
+
+const analyzeButton =
+    document.getElementById("analyzeButton");
+
+const uploadArea =
+    document.getElementById("uploadArea");
+
+
+/* =========================================================
+   IMAGE PREVIEW
+========================================================= */
+
+imageInput.addEventListener("change", function () {
+
+    const file = this.files[0];
+
+    if (!file) {
+        return;
+    }
+
+    const reader = new FileReader();
+
+    reader.onload = function (e) {
+
+        preview.innerHTML = `
+
+            <div class="preview-wrapper">
+
+                <img
+                    src="${e.target.result}"
+                    class="preview-image"
+                    alt="Uploaded tomato leaf"
+                >
+
+                <div class="preview-info">
+
+                    <span>✓ Image selected</span>
+
+                    <button
+                        type="button"
+                        class="change-image"
+                        onclick="changeImage()"
+                    >
+                        Change image
+                    </button>
+
+                </div>
+
+            </div>
+
+        `;
+
+        uploadArea.classList.add("has-image");
+
+    };
+
+    reader.readAsDataURL(file);
+
+});
+
+
+/* =========================================================
+   CHANGE IMAGE
+========================================================= */
+
+function changeImage() {
+
+    imageInput.value = "";
+
+    preview.innerHTML = "";
+
+    uploadArea.classList.remove("has-image");
+
+    imageInput.click();
+
+}
+
+
+/* =========================================================
+   FORM SUBMISSION
+========================================================= */
+
+uploadForm.addEventListener(
+    "submit",
+    async function (e) {
+
+        e.preventDefault();
+
+        const file = imageInput.files[0];
+
+        if (!file) {
+            return;
+        }
+
+
+        /* -------------------------------
+           Disable button
+        -------------------------------- */
+
+        analyzeButton.disabled = true;
+
+        analyzeButton.innerHTML = `
+            <span class="spinner"></span>
+            Analyzing...
+        `;
+
+
+        /* -------------------------------
+           Loading state
+        -------------------------------- */
+
+        result.innerHTML = `
+
+            <div class="loading-card">
+
+                <div class="loading-animation">
+                    🧠
+                </div>
+
+                <h3>
+                    Analyzing your leaf...
+                </h3>
+
+                <p>
+                    CropGuard AI is identifying the disease
+                    and preparing management guidance.
+                </p>
+
+                <div class="loading-bar">
+                    <div></div>
+                </div>
+
+            </div>
+
+        `;
+
+
+        /* -------------------------------
+           Form data
+        -------------------------------- */
+
+        const formData = new FormData();
+
+        formData.append("file", file);
+
+
+        try {
+
+            const response = await fetch(
+                "/predict",
+                {
+                    method: "POST",
+                    body: formData
+                }
+            );
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    "Prediction request failed"
+                );
+
+            }
+
+
+            const data =
+                await response.json();
+
+
+            const advice =
+                data.advice;
+
+            const confidence =
+                data.confidence;
+
+            const aiAdvice =
+                data.ai_advice;
+
+
+            /* =====================================================
+               CONFIDENCE CLASS
+            ===================================================== */
+
+            let confidenceClass;
+
+            let confidenceLabel;
+
+            if (confidence >= 80) {
+
+                confidenceClass =
+                    "high-confidence";
+
+                confidenceLabel =
+                    "High confidence";
+
+            }
+            else if (confidence >= 60) {
+
+                confidenceClass =
+                    "medium-confidence";
+
+                confidenceLabel =
+                    "Moderate confidence";
+
+            }
+            else {
+
+                confidenceClass =
+                    "low-confidence";
+
+                confidenceLabel =
+                    "Low confidence";
+
+            }
+
+
+            /* =====================================================
+               FORMAT GEMINI RESPONSE
+            ===================================================== */
+
+            let formattedAIAdvice = "";
+
+
+            if (aiAdvice) {
+
+                formattedAIAdvice =
+                    aiAdvice
+
+                    .replace(
+                        /^### (.*)$/gm,
+                        "<h4>$1</h4>"
+                    )
+
+                    .replace(
+                        /\*\*(.*?)\*\*/g,
+                        "<strong>$1</strong>"
+                    )
+
+                    .replace(
+                        /^\* (.*)$/gm,
+                        "<li>$1</li>"
+                    )
+
+                    .replace(
+                        /\n\n/g,
+                        "<br>"
+                    );
+
+
+                formattedAIAdvice =
+                    formattedAIAdvice.replace(
+                        /(<li>.*?<\/li>)+/gs,
+                        function (match) {
+
+                            return (
+                                "<ul>" +
+                                match +
+                                "</ul>"
+                            );
+
+                        }
+                    );
+
+            }
+            else {
+
+                formattedAIAdvice = `
+
+                    <div class="ai-unavailable">
+
+                        <span>ℹ️</span>
+
+                        <p>
+                            AI management advice is unavailable
+                            because the model confidence is too low.
+                        </p>
+
+                    </div>
+
+                `;
+
+            }
+
+
+            /* =====================================================
+               UNCERTAIN PREDICTION
+            ===================================================== */
+
+            if (data.disease === "Uncertain") {
+
+                result.innerHTML = `
+
+                    <div class="result-card uncertain-card">
+
+                        <div class="result-top">
+
+                            <div class="result-icon uncertain-icon">
+                                ⚠️
+                            </div>
+
+                            <div>
+
+                                <span class="result-label">
+                                    Analysis Result
+                                </span>
+
+                                <h2>
+                                    Uncertain Prediction
+                                </h2>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="confidence-box ${confidenceClass}">
+
+                            <div class="confidence-header">
+
+                                <span>
+                                    Model confidence
+                                </span>
+
+                                <strong>
+                                    ${confidence}%
+                                </strong>
+
+                            </div>
+
+                            <div class="confidence-track">
+
+                                <div
+                                    class="confidence-fill"
+                                    style="width:${confidence}%"
+                                ></div>
+
+                            </div>
+
+                            <small>
+                                ${confidenceLabel}
+                            </small>
+
+                        </div>
+
+
+                        <div class="advice-grid">
+
+                            <div class="advice-section">
+
+                                <div class="advice-heading">
+                                    <span>🔍</span>
+                                    <h3>What to do</h3>
+                                </div>
+
+                                <ul>
+
+                                    ${advice.immediate_actions
+                                        .map(
+                                            item =>
+                                            `<li>${item}</li>`
+                                        )
+                                        .join("")}
+
+                                </ul>
+
+                            </div>
+
+
+                            <div class="advice-section">
+
+                                <div class="advice-heading">
+                                    <span>🛡️</span>
+                                    <h3>Prevention</h3>
+                                </div>
+
+                                <ul>
+
+                                    ${advice.prevention
+                                        .map(
+                                            item =>
+                                            `<li>${item}</li>`
+                                        )
+                                        .join("")}
+
+                                </ul>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="uncertain-warning">
+
+                            <span>⚠️</span>
+
+                            <p>
+                                The model is not confident enough
+                                to provide disease-specific treatment
+                                advice. Try uploading a clearer image
+                                or consult a qualified agricultural
+                                professional.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                `;
+
+                resetButton();
+
+                return;
+
+            }
+
+
+            /* =====================================================
+               NORMAL RESULT
+            ===================================================== */
+
+            result.innerHTML = `
+
+                <div class="result-card">
+
+                    <!-- RESULT HEADER -->
+
+                    <div class="result-top">
+
+                        <div class="result-icon disease-icon">
+                            🌿
+                        </div>
+
+                        <div>
+
+                            <span class="result-label">
+                                Analysis Result
+                            </span>
+
+                            <h2>
+                                ${data.disease}
+                            </h2>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- CONFIDENCE -->
+
+                    <div class="confidence-box ${confidenceClass}">
+
+                        <div class="confidence-header">
+
+                            <span>
+                                AI model confidence
+                            </span>
+
+                            <strong>
+                                ${confidence}%
+                            </strong>
+
+                        </div>
+
+                        <div class="confidence-track">
+
+                            <div
+                                class="confidence-fill"
+                                style="width:${confidence}%"
+                            ></div>
+
+                        </div>
+
+                        <small>
+                            ${confidenceLabel}
+                        </small>
+
+                    </div>
+
+
+                    <!-- DISEASE INFORMATION -->
+
+                    <div class="advice-grid">
+
+
+                        <!-- ABOUT -->
+
+                        <div class="advice-section">
+
+                            <div class="advice-heading">
+
+                                <span>📋</span>
+
+                                <h3>
+                                    About the Disease
+                                </h3>
+
+                            </div>
+
+                            <p>
+                                ${advice.description}
+                            </p>
+
+                        </div>
+
+
+                        <!-- SYMPTOMS -->
+
+                        <div class="advice-section">
+
+                            <div class="advice-heading">
+
+                                <span>🔎</span>
+
+                                <h3>
+                                    Common Symptoms
+                                </h3>
+
+                            </div>
+
+                            <ul>
+
+                                ${advice.symptoms
+                                    .map(
+                                        item =>
+                                        `<li>${item}</li>`
+                                    )
+                                    .join("")}
+
+                            </ul>
+
+                        </div>
+
+
+                        <!-- IMMEDIATE ACTIONS -->
+
+                        <div class="advice-section">
+
+                            <div class="advice-heading">
+
+                                <span>⚡</span>
+
+                                <h3>
+                                    Immediate Actions
+                                </h3>
+
+                            </div>
+
+                            <ul>
+
+                                ${advice.immediate_actions
+                                    .map(
+                                        item =>
+                                        `<li>${item}</li>`
+                                    )
+                                    .join("")}
+
+                            </ul>
+
+                        </div>
+
+
+                        <!-- PREVENTION -->
+
+                        <div class="advice-section">
+
+                            <div class="advice-heading">
+
+                                <span>🛡️</span>
+
+                                <h3>
+                                    Prevention
+                                </h3>
+
+                            </div>
+
+                            <ul>
+
+                                ${advice.prevention
+                                    .map(
+                                        item =>
+                                        `<li>${item}</li>`
+                                    )
+                                    .join("")}
+
+                            </ul>
+
+                        </div>
+
+
+                        <!-- TREATMENT -->
+
+                        <div class="advice-section full-width">
+
+                            <div class="advice-heading">
+
+                                <span>💊</span>
+
+                                <h3>
+                                    Treatment Considerations
+                                </h3>
+
+                            </div>
+
+                            <ul>
+
+                                ${advice.treatment
+                                    .map(
+                                        item =>
+                                        `<li>${item}</li>`
+                                    )
+                                    .join("")}
+
+                            </ul>
+
+                        </div>
+
+
+                    </div>
+
+
+                    <!-- =================================================
+                         GEMINI AI ADVICE
+                    ================================================== -->
+
+                    <div class="ai-advice-section">
+
+                        <div class="ai-header">
+
+                            <div class="ai-icon">
+                                ✨
+                            </div>
+
+                            <div>
+
+                                <span>
+                                    GENERATIVE AI
+                                </span>
+
+                                <h3>
+                                    CropGuard AI Management Advice
+                                </h3>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="ai-advice-content">
+
+                            ${formattedAIAdvice}
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- DISCLAIMER -->
+
+                    <div class="disclaimer">
+
+                        <span>⚠️</span>
+
+                        <p>
+                            <strong>Important:</strong>
+                            This system provides AI-assisted information
+                            for general guidance and is not a definitive
+                            agricultural diagnosis. Confirm disease
+                            identification and treatment decisions with
+                            a qualified agricultural professional,
+                            especially before applying pesticides or
+                            other crop-protection products.
+                        </p>
+
+                    </div>
+
+
+                </div>
+
+            `;
+
+
+            /* -------------------------------
+               Scroll to result
+            -------------------------------- */
+
+            setTimeout(function () {
+
+                result.scrollIntoView({
+                    behavior: "smooth",
+                    block: "start"
+                });
+
+            }, 100);
+
+
+            resetButton();
+
+
+        }
+        catch (error) {
+
+            console.error(error);
+
+            result.innerHTML = `
+
+                <div class="error-card">
+
+                    <div class="error-icon">
+                        ⚠️
+                    </div>
+
+                    <h3>
+                        Unable to analyze the image
+                    </h3>
+
+                    <p>
+                        Something went wrong while processing
+                        the image. Please try again.
+                    </p>
+
+                    <button
+                        type="button"
+                        onclick="location.reload()"
+                        class="retry-button"
+                    >
+                        Try Again
+                    </button>
+
+                </div>
+
+            `;
+
+            resetButton();
+
+        }
+
+    }
+);
+
+
+/* =========================================================
+   RESET BUTTON
+========================================================= */
+
+function resetButton() {
+
+    analyzeButton.disabled = false;
+
+    analyzeButton.innerHTML = `
+        <span>🔍</span>
+        Analyze Leaf
+    `;
+
+}
+
+</script>
+
+</body>
+</html>
